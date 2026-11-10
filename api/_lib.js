@@ -26,10 +26,42 @@ export async function sb(path, { method = 'GET', body, prefer } = {}) {
 }
 
 export async function espn(url) {
-  const sep = url.includes('?') ? '&' : '?';
-  const r = await fetch(`${url}${sep}lang=es&region=co`, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+  const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
   if (!r.ok) throw httpErr(502, `ESPN respondió ${r.status}`);
   return r.json();
+}
+
+const toDate = (s) => new Date(Date.UTC(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8)));
+const toYmd = (d) => d.toISOString().slice(0, 10).replace(/-/g, '');
+
+/**
+ * Partidos entre dos fechas (YYYYMMDD). ESPN no siempre acepta rangos largos para col.1,
+ * así que prueba: rango completo → bloques de 7 días → día por día. Une y quita duplicados.
+ */
+export async function scoreboardRange(from, to) {
+  const days = [];
+  for (let d = toDate(from); d <= toDate(to); d = new Date(d.getTime() + 864e5)) days.push(toYmd(d));
+  if (!days.length) return { events: [] };
+  const one = (q) => espn(`${ESPN}/scoreboard?dates=${q}`);
+  const merge = (list) => {
+    const seen = new Map();
+    for (const r of list) for (const ev of r?.events || []) seen.set(ev.id, ev);
+    return { events: [...seen.values()] };
+  };
+  if (days.length === 1) return merge([await one(days[0])]);
+  try { return merge([await one(`${from}-${to}`)]); } catch {}
+  const chunk = async (size) => {
+    const qs = [];
+    for (let i = 0; i < days.length; i += size) {
+      const a = days[i], b = days[Math.min(i + size, days.length) - 1];
+      qs.push(a === b ? a : `${a}-${b}`);
+    }
+    const out = [];
+    for (let i = 0; i < qs.length; i += 10) out.push(...await Promise.all(qs.slice(i, i + 10).map(one)));
+    return merge(out);
+  };
+  try { return await chunk(7); } catch {}
+  return chunk(1);
 }
 
 export function httpErr(status, message) {

@@ -1,4 +1,4 @@
-import { ESPN, espn, sb, send, fail, query, groupByCode, eventResult, scoreBet, ymd } from './_lib.js';
+import { scoreboardRange, sb, send, fail, query, groupByCode, eventResult, scoreBet, ymd } from './_lib.js';
 
 // GET /api/leaderboard?code=ABC123
 export default async function handler(req, res) {
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
       const times = counted.map((b) => Date.parse(b.kickoff));
       const from = ymd(new Date(Math.min(...times) - 864e5));
       const to = ymd(new Date(Math.max(...times) + 864e5));
-      const sbd = await espn(`${ESPN}/scoreboard?dates=${from}-${to}&limit=500`);
+      const sbd = await scoreboardRange(from, to);
       for (const ev of sbd.events || []) results[ev.id] = eventResult(ev.competitions?.[0]);
     }
 
