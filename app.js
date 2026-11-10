@@ -40,10 +40,9 @@ const store = {
 };
 
 /* ---------------- datos ESPN ---------------- */
+// Ventana de partidos: 5 semanas atrás y 5 adelante (menos llamadas a ESPN)
 function seasonRange(now = new Date()) {
-  const y = Number(fmt(now, { year: 'numeric' }));
-  const m = Number(fmt(now, { month: 'numeric' }));
-  return m <= 6 ? `${y}0101-${y}0630` : `${y}0701-${y}1231`;
+  return `${ymd(now.getTime() - 35 * 864e5)}-${ymd(now.getTime() + 35 * 864e5)}`;
 }
 
 function parseEvent(ev) {
