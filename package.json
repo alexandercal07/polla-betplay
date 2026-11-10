@@ -1,0 +1,6 @@
+{
+  "name": "liga-betplay-polla",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=18" }
+}

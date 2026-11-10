@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b0f1a" />
+  <title>Polla BetPlay · Liga Dimayor en vivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="#partidos"><span class="ball">⚽</span> Polla <b>BetPlay</b></a>
+    <span id="liveDot" class="live-dot" hidden>EN VIVO</span>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <a href="#partidos" data-tab="partidos">Partidos</a>
+    <a href="#tabla" data-tab="tabla">Posiciones</a>
+    <a href="#grupos" data-tab="grupos">Mis pollas</a>
+  </nav>
+
+  <main id="app"><div class="loading">Cargando…</div></main>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <footer class="foot">Datos: API pública de ESPN (no oficial). Se actualiza automáticamente durante los partidos.</footer>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
